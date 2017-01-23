@@ -90,7 +90,7 @@ void CWindow::startMainLoop(mainLoop f){
 /*
 *	makes texture from file, return ogl texture id;
 */
-int CWindow::makeTexture(std::string name){
+int CWindow::makeTexture(std::string name, BYTE **outData){
     //check: file existance
     if(_access(name.c_str(), 4) == -1){
         printf("error:%s - not found\n",name.c_str());
@@ -135,6 +135,13 @@ int CWindow::makeTexture(std::string name){
     pixels = (BYTE*)bitmapData->Scan0;
     //--//copy bitmap data
     memcpy(ImageBuffer, pixels, sizeof(BYTE)*4*imgHeight*imgWidth);
+    //second copy to output
+    if(outData != NULL){
+        *outData = (BYTE*)malloc(sizeof(BYTE*) *imgWidth*imgHeight*4);
+        memcpy(*outData, pixels, sizeof(BYTE)*4*imgHeight*imgWidth);
+    }
+
+    //close orig data
     bitmap->UnlockBits(bitmapData);
 
 
@@ -146,8 +153,6 @@ int CWindow::makeTexture(std::string name){
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, 4, imgWidth, imgHeight, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, ImageBuffer);
-
-
 
     //cleanup
     free(dimensionIds);
@@ -176,20 +181,29 @@ void CWindow::drawImg(GLuint texId, float x, float y, float w, float h, float im
     glBindTexture(GL_TEXTURE_2D, texId);
 
     glBegin(GL_QUADS);
-      glVertex2f(x, y + h); //1
-      glTexCoord2f(imgX+imgW,	imgY+imgH);
+      glVertex2f(x, y);
+      glTexCoord2f(imgX, imgY);
 
-      glVertex2f(x + w ,y + h); //2
-      glTexCoord2f(imgX+imgW,	imgY);
+      glVertex2f(x, y+h);
+      glTexCoord2f(imgX+imgW, imgY);
 
-      glVertex2f(x + w,	y); //3
-      glTexCoord2f(imgX,	imgY);
+      glVertex2f(x+w, y+h);
+      glTexCoord2f(imgX+imgW, imgY+imgH);
 
-      glVertex2f(x, y); //4
-      glTexCoord2f(imgX,	imgY+imgH);
+      glVertex2f(x+w, y);
+      glTexCoord2f(imgX, imgY+imgH);
+
     glEnd();
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
+
+}
+
+void CWindow::drawBitmap(unsigned w, unsigned h, BYTE * data){
+    glRasterPos2d(100,100);
+    glPixelZoom(1,1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glDrawPixels(w,h,GL_BGRA_EXT, GL_UNSIGNED_BYTE,data);
 }
 
 /*

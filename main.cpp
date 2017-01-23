@@ -5,7 +5,7 @@ CWindow WINDOW;
 
 
 GLuint testTex;
-
+BYTE *data;
 
 void cycle(){
 	static DWORD t2 = 0;
@@ -16,6 +16,8 @@ void cycle(){
 	WINDOW.clearWindow();
 	WINDOW.drawImg(testTex,30,30, 150, 150, 0,0, 1.0f/3, 1);
 	//WINDOW.drawLine(1,0,0, 10,0, 10,290);
+    //WINDOW.drawBitmap(480,160, data);
+
 	WINDOW.swapBuffers();
 	//check input
 	if(WINDOW._keys[VK_ESCAPE]){
@@ -33,6 +35,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//initWindow
 	if(!WINDOW.initWnd(120,120, 640, 480, hInstance))
 		return 1;
+
     testTex = WINDOW.makeTexture("hero.png");
     if(testTex == -1)
         return 1;
@@ -40,6 +43,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//start cycle
 	WINDOW.startMainLoop(cycle);
 
+	free(data);
 	return 0;
 }
 

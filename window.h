@@ -30,12 +30,13 @@ public:
 
 	void startMainLoop(mainLoop f);
 	void shutdown();
-	int makeTexture(std::string name);
+	int makeTexture(std::string name, BYTE **outData = NULL);
 
 	void drawImg(GLuint texId, float x, float y, float w, float h);
 	void drawImg(GLuint texId, float x, float y, float w, float h, float imgX, float imgY, float imgW, float imgH);
     void drawRect(float r, float g, float b, float x, float y, float w, float h);
     void drawLine(float r, float g, float b, float x1, float y1, float x2, float y2);
+    void drawBitmap(unsigned w, unsigned h, BYTE * data);
 
 	void clearWindow();
 	void swapBuffers();
