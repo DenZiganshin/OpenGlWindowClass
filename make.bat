@@ -1,0 +1,1 @@
+g++ -s -O3 main.cpp window.cpp -lopengl32 -lgdiplus -lgdi32
